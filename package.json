@@ -1,0 +1,31 @@
+{
+  "name": "proiect-t.w",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "all": "^0.0.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.x.x",
+    "express": "^4.19.x",
+    "joi": "^17.13.3",
+    "joi-to-swagger": "^6.x.x",
+    "jsonwebtoken": "^9.x.x",
+    "swagger-jsdoc": "^6.x.x",
+    "swagger-ui-express": "^5.x.x"
+  },
+  "devDependencies": {
+    "nodemon": "^3.x.x",
+    "prisma": "^6.8.2"
+  }
+}
