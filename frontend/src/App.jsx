@@ -1,12 +1,15 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom'; // Added Link for the 404 example
 
 // Import Page Components
-import HomePage from './Pages/HomePage'; // Corrected path
-import LoginPage from './Pages/LoginPage'; // Corrected path
-import RegisterPage from './Pages/RegisterPage'; // Corrected path
-import DashboardPage from './Pages/DashboardPage'; // Corrected path
-import PostsListPage from './Pages/PostsListPage'; // 1. Import your new PostsListPage
+import HomePage from './Pages/HomePage';
+import LoginPage from './Pages/LoginPage';
+import RegisterPage from './Pages/RegisterPage';
+import DashboardPage from './Pages/DashboardPage';
+import PostsListPage from './Pages/PostsListPage';
+import AddPostPage from './Pages/AddPostPage';
+import EditPostPage from './Pages/EditPostPage';
+import CategoriesListPage from './Pages/CategoriesListPage';
 
 // Import Custom Components
 import NavBar from './components/NavBar';
@@ -19,15 +22,18 @@ function App() {
   return (
     <div>
       <NavBar />
-      <div style={{ paddingTop: '20px', paddingLeft: '20px', paddingRight: '20px' }}>
+      
+      {/* A main content area for the pages */}
+      <div style={{ paddingTop: '1px', paddingLeft: '20px', paddingRight: '20px', paddingBottom: '20px' }}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/posts" element={<PostsListPage />} /> {/* 2. Add route for Posts List */}
+          <Route path="/posts" element={<PostsListPage />} />
+          <Route path="/categories" element={<CategoriesListPage />} />
 
-          {/* Protected Routes */}
+          {/* Protected Routes - only accessible to logged-in users */}
           <Route
             path="/dashboard"
             element={
@@ -35,6 +41,34 @@ function App() {
                 <DashboardPage />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/posts/new" 
+            element={
+              <ProtectedRoute>
+                <AddPostPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/posts/edit/:postId" 
+            element={
+              <ProtectedRoute>
+                <EditPostPage />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Fallback route for unmatched paths (404 Not Found) */}
+          <Route 
+            path="*" 
+            element={
+              <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                <h2>404 - Page Not Found</h2>
+                <p>Sorry, the page you are looking for does not exist.</p>
+                <Link to="/">Go to Homepage</Link>
+              </div>
+            } 
           />
         </Routes>
       </div>

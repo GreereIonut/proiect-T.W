@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // To redirect after successful registration
-import ApiClient from '../services/apiClient'; // Adjust path as needed
+import axios from 'axios'; // Or your apiClient
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+
+// Import React Bootstrap components
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Alert from 'react-bootstrap/Alert';
 
 function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -8,97 +16,105 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission which reloads the page
-    setError(''); // Clear previous errors
-    setSuccessMessage(''); // Clear previous success messages
+    event.preventDefault();
+    setError('');
+    setSuccessMessage('');
 
-    // Basic client-side validation (you can add more)
     if (!username || !email || !password) {
       setError('All fields are required.');
       return;
     }
+    // You could add more client-side validation here (e.g., password complexity)
 
     try {
-      // Make the API call to your backend's register endpoint
-      // Ensure your backend is running and accessible at this URL
-      const response = await ApiClient.post('/auth/register', {
-  username,
-  email,
-  password,
-});
+      // Replace with apiClient if you prefer:
+      // import apiClient from '../services/apiClient';
+      // const response = await apiClient.post('/auth/register', { username, email, password });
+      const response = await axios.post('http://localhost:8000/api/auth/register', {
+        username,
+        email,
+        password,
+      });
 
-      // Handle success
-      setSuccessMessage(response.data.message + ' You will be redirected to login.');
+      setSuccessMessage(response.data.message + ' Redirecting to login...');
       console.log('Registration successful:', response.data);
       
-      // Clear form fields
       setUsername('');
       setEmail('');
       setPassword('');
 
-      // Redirect to login page after a short delay
       setTimeout(() => {
         navigate('/login');
-      }, 2000); // Redirect after 2 seconds
+      }, 2000);
 
     } catch (err) {
-      // Handle errors
       if (err.response && err.response.data && err.response.data.message) {
-        // If the backend sends a specific error message
         setError(err.response.data.message);
       } else if (err.response && err.response.data && err.response.data.errors) {
-        // If the backend sends an array of validation errors (from Joi)
         setError(err.response.data.errors.join(', '));
-      }
-      else {
+      } else {
         setError('Registration failed. Please try again.');
       }
-      console.error('Registration error:', err);
+      console.error('Registration error:', err.response || err.message);
     }
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-        <button type="submit">Register</button>
-      </form>
-    </div>
+    <Container className="mt-5">
+      <Row className="justify-content-md-center">
+        <Col xs={12} md={6} lg={4}>
+          <h2 className="mb-4 text-center">Register</h2>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formRegisterUsername">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formRegisterEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formRegisterPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6} // Example: Enforce min length in HTML
+              />
+            </Form.Group>
+
+            {error && <Alert variant="danger" className="mb-3">{error}</Alert>}
+            {successMessage && <Alert variant="success" className="mb-3">{successMessage}</Alert>}
+            
+            <Button variant="primary" type="submit" className="w-100">
+              Register
+            </Button>
+          </Form>
+          <div className="mt-3 text-center">
+            <p>Already have an account? <RouterLink to="/login">Login here</RouterLink></p>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

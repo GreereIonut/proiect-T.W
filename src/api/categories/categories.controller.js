@@ -29,8 +29,16 @@ const createCategoryController = async (req, res) => {
 // Controller to get all categories (Public)
 const getAllCategoriesController = async (req, res) => {
   try {
-    const categories = await categoriesService.getAllCategories();
-    res.status(200).json(categories);
+    const { search, page, pageSize } = req.query;
+
+    const pageNum = parseInt(page) || 1;
+    const pageSizeNum = parseInt(pageSize) || 10;
+
+    console.log('CATEGORIES Controller - Search:', search, 'Page:', pageNum, 'PageSize:', pageSizeNum);
+
+    const result = await categoriesService.getAllCategories(search, pageNum, pageSizeNum);
+    
+    res.status(200).json(result); // Send back the object containing categories and pagination info
   } catch (error) {
     console.error("Error fetching categories:", error);
     res.status(500).json({ message: 'Error fetching categories.' });

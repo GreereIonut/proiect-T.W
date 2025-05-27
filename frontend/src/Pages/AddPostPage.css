@@ -1,0 +1,48 @@
+body {
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.add-post-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem; /* Increased padding for better spacing */
+}
+
+h2 {
+  font-size: 3.5rem; /* Increased font size for the heading */
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+form {
+  font-size: 1.5rem; /* Increased font size for form elements */
+}
+
+form .form-control {
+  font-size: 1.4rem; /* Larger input fields */
+  padding: 1.2rem; /* Increased padding for input fields */
+}
+
+button {
+  font-size: 1.6rem; /* Increased button font size */
+  padding: 1rem; /* Increased button padding */
+}
+
+.alert {
+  font-size: 1.4rem; /* Increased alert font size */
+}
+
+.bg-white {
+  max-width: 800px; /* Set a larger maximum width for the form container */
+  width: 100%; /* Ensure it spans the full width on smaller screens */
+  padding: 4rem; /* Increased padding inside the container */
+  border-radius: 12px; /* Added rounded corners */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Added a subtle shadow for better aesthetics */
+}

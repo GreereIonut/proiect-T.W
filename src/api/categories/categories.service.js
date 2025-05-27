@@ -19,12 +19,38 @@ const createCategory = async (categoryData) => {
  * Retrieves all categories.
  * @returns {Promise<Array<object>>} A list of all categories.
  */
-const getAllCategories = async () => {
-  return await prisma.category.findMany({
-    orderBy: {
-        name: 'asc' // Order alphabetically by name
-    }
+// Modified to accept searchTerm, page, and pageSize
+const getAllCategories = async (searchTerm, page = 1, pageSize = 10) => {
+  console.log('CATEGORIES Service - Search term:', searchTerm, 'Page:', page, 'PageSize:', pageSize);
+
+  const whereClause = searchTerm
+    ? {
+        name: { contains: searchTerm, mode: 'insensitive' }, // Search in category name
+      }
+    : {};
+
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
+
+  const totalCategories = await prisma.category.count({
+    where: whereClause,
   });
+
+  const categories = await prisma.category.findMany({
+    where: whereClause,
+    orderBy: { name: 'asc' },
+    skip: skip,
+    take: take,
+  });
+
+  console.log('CATEGORIES Service - Found categories:', categories.length, 'Total:', totalCategories);
+
+  return {
+    categories, // The categories for the current page
+    totalCategories,
+    totalPages: Math.ceil(totalCategories / pageSize),
+    currentPage: page,
+  };
 };
 
 /**

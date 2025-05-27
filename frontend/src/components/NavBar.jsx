@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Navbar, Nav, Button, Container } from 'react-bootstrap'; // Import React Bootstrap components
 
 function NavBar() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -11,70 +12,35 @@ function NavBar() {
     navigate('/login');
   };
 
-  const navStyle = {
-    backgroundColor: '#f0f0f0',
-    padding: '10px 20px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottom: '1px solid #ccc',
-  };
-
-  const ulStyle = {
-    listStyleType: 'none',
-    margin: 0,
-    padding: 0,
-    display: 'flex',
-    gap: '15px',
-    alignItems: 'center',
-  };
-
-  const linkStyle = {
-    textDecoration: 'none',
-    color: '#333',
-  };
-
-  const buttonStyle = {
-    padding: '5px 10px',
-    cursor: 'pointer',
-  };
-
   return (
-    <nav style={navStyle}>
-      <div style={ulStyle}>
-        <li style={{ fontWeight: 'bold' }}>
-          <Link to="/" style={linkStyle}>MyBlogApp</Link>
-        </li>
-        <li>
-          <Link to="/" style={linkStyle}>Home</Link>
-        </li>
-        <li>
-          <Link to="/posts" style={linkStyle}>Posts</Link> {/* <-- ADDED THIS LINK */}
-        </li>
-      </div>
-      <div style={ulStyle}>
-        {isAuthenticated ? (
-          <>
-            {user && <li><span style={{ marginRight: '10px' }}>Hi, {user.username}!</span></li>}
-            <li>
-              <Link to="/dashboard" style={linkStyle}>Dashboard</Link>
-            </li>
-            <li>
-              <button onClick={handleLogout} style={buttonStyle}>Logout</button>
-            </li>
-          </>
-        ) : (
-          <>
-            <li>
-              <Link to="/login" style={linkStyle}>Login</Link>
-            </li>
-            <li>
-              <Link to="/register" style={linkStyle}>Register</Link>
-            </li>
-          </>
-        )}
-      </div>
-    </nav>
+    <Navbar bg="light" expand="lg" variant="light" className="mb-3"> {/* Added mb-3 for margin-bottom */}
+      <Container>
+        <Navbar.Brand as={Link} to="/">MyBlogApp</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
+            <Nav.Link as={Link} to="/posts">Posts</Nav.Link>
+            <Nav.Link as={Link} to="/categories">Categories</Nav.Link>
+          </Nav>
+          <Nav>
+            {isAuthenticated ? (
+              <>
+                {user && <Navbar.Text className="me-2">Hi, {user.username}! ({user.role})</Navbar.Text>}
+                <Nav.Link as={Link} to="/dashboard" className="me-2">Dashboard</Nav.Link>
+                <Nav.Link as={Link} to="/posts/new" className="me-2">Add Post</Nav.Link>
+                <Button variant="outline-secondary" onClick={handleLogout}>Logout</Button>
+              </>
+            ) : (
+              <>
+                <Nav.Link as={Link} to="/login" className="me-2">Login</Nav.Link>
+                <Nav.Link as={Link} to="/register">Register</Nav.Link>
+              </>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
 
