@@ -2,8 +2,20 @@ const postsService = require('./posts.service');
 
 const getAllPostsController = async (req, res) => {
   try {
-    const posts = await postsService.getAllPosts();
-    res.status(200).json(posts);
+    const { search, page, pageSize } = req.query;
+
+    // Convert page and pageSize to numbers, provide defaults
+    const pageNum = parseInt(page) || 1;
+    const pageSizeNum = parseInt(pageSize) || 10; // Default to 10 items per page
+
+    console.log('Backend Controller - Search term received:', search);
+    console.log('Backend Controller - Page received:', pageNum);
+    console.log('Backend Controller - PageSize received:', pageSizeNum);
+
+    // Pass search term, page number, and page size to the service
+    const result = await postsService.getAllPosts(search, pageNum, pageSizeNum);
+    
+    res.status(200).json(result); // Send back the object containing posts and pagination info
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ message: 'Error fetching posts' });

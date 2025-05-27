@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // You correctly imported this
+import ApiClient from '../services/apiClient'; // Adjust path as needed
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -21,10 +21,10 @@ function LoginPage() {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/login', {
-        email,
-        password,
-      });
+      const response = await ApiClient.post('/auth/login', { 
+  email,
+  password,
+});
 
       if (response.data && response.data.token) {
         // Use the login function from AuthContext

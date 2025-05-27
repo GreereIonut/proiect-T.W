@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // To redirect after successful registration
+import ApiClient from '../services/apiClient'; // Adjust path as needed
 
 function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -24,11 +24,11 @@ function RegisterPage() {
     try {
       // Make the API call to your backend's register endpoint
       // Ensure your backend is running and accessible at this URL
-      const response = await axios.post('http://localhost:8000/api/auth/register', {
-        username,
-        email,
-        password,
-      });
+      const response = await ApiClient.post('/auth/register', {
+  username,
+  email,
+  password,
+});
 
       // Handle success
       setSuccessMessage(response.data.message + ' You will be redirected to login.');
