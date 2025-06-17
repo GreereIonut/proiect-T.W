@@ -15,55 +15,101 @@ enum Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  role      Role     @default(USER) // Ensure this line exists
-  createdAt DateTime @default(now())
-
-  posts    Post[]
-  comments Comment[]
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  username      String        @unique
+  password      String
+  role          Role          @default(USER)
+  createdAt     DateTime      @default(now())
+  posts         Post[]
+  comments      Comment[]
+  reviews       Review[]
+  readingLists  ReadingList[]
+  books        Book[]
 }
 
 model Category {
   id    Int    @id @default(autoincrement())
   name  String @unique
   posts Post[]
+  books Book[]
 }
 
 model Tag {
   id    Int    @id @default(autoincrement())
   name  String @unique
   posts Post[] @relation("PostTags")
+  books Book[] @relation("BookTags")
 }
 
 model Post {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   title      String
   content    String?
-  published  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt // Ensure this line exists and has @updatedAt
-
-  author     User     @relation(fields: [authorId], references: [id])
+  published  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  author     User      @relation(fields: [authorId], references: [id])
   authorId   Int
-
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category  @relation(fields: [categoryId], references: [id])
   categoryId Int
-
-  comments Comment[]
-  tags     Tag[]      @relation("PostTags")
+  comments   Comment[]
+  tags       Tag[]     @relation("PostTags")
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
   text      String
   createdAt DateTime @default(now())
-
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
-
   post      Post     @relation(fields: [postId], references: [id])
   postId    Int
+}
+
+model Book {
+  id          Int           @id @default(autoincrement())
+  title       String
+  author      String
+  isbn        String?       @unique
+  description String?       @db.Text
+  coverUrl    String?
+  genre       String?
+  published   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  category    Category      @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  createdBy   User?        @relation(fields: [createdById], references: [id])
+  createdById Int?
+  tags        Tag[]         @relation("BookTags")
+  reviews     Review[]
+  readingLists ReadingList[]
+  rating      Float?        @default(0)
+  ratingCount Int          @default(0)
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int      @default(0)
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  book      Book     @relation(fields: [bookId], references: [id])
+  bookId    Int
+}
+
+model ReadingList {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("TO_READ") // TO_READ, READING, COMPLETED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  book      Book     @relation(fields: [bookId], references: [id])
+  bookId    Int
+
+  @@unique([userId, bookId])
 }

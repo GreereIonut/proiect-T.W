@@ -1,121 +1,177 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
-import { useAuth } from '../context/AuthContext';
+import './AddPostPage.css';
 
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-
-import './AddPostPage.css'; // Add a custom CSS file for styling
-
-function AddPostPage() {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [publishImmediately, setPublishImmediately] = useState(false);
+function AddBookPost() {
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState({
+    bookTitle: '',
+    author: '',
+    isbn: '',
+    genre: '',
+    review: '',
+    rating: 5
+  });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchPosts = async () => {
       try {
-        const response = await apiClient.get('/categories');
-        setCategories(response.data || []);
-      } catch (err) {
-        setError('Failed to fetch categories.');
+        const response = await apiClient.get('/posts');
+        setPosts(response.data.posts || []);
+      } catch (error) {
+        setError('Failed to fetch book reviews. ' + error.message);
       }
     };
-    fetchCategories();
+    fetchPosts();
   }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
-    setSuccessMessage('');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewPost(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-    if (!title || !content || !selectedCategory) {
-      setError('All fields are required.');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!newPost.bookTitle.trim() || !newPost.author.trim() || !newPost.review.trim()) {
+      setError('Book title, author, and review are required.');
       return;
     }
 
     try {
-      await apiClient.post('/posts', {
-        title,
-        content,
-        categoryId: selectedCategory,
-        published: publishImmediately,
+      const response = await apiClient.post('/posts', {
+        title: `${newPost.bookTitle} by ${newPost.author}`,
+        content: JSON.stringify(newPost)
       });
-      setSuccessMessage('Post created successfully!');
-      setTimeout(() => navigate('/posts'), 2000);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create post.');
+      setPosts([...posts, response.data]);
+      setNewPost({
+        bookTitle: '',
+        author: '',
+        isbn: '',
+        genre: '',
+        review: '',
+        rating: 5
+      });
+      setSuccessMessage('Book review posted successfully!');
+      navigate('/posts'); // Redirect to posts list after successful submission
+    } catch (error) {
+      setError('Failed to post book review. ' + error.message);
     }
   };
 
   return (
-    <div className="container-centered">
-      <h2>Create New Post</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      {successMessage && <Alert variant="success">{successMessage}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="formPostTitle">
-          <Form.Label>Title:</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter post title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formPostContent">
-          <Form.Label>Content:</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={5}
-            placeholder="Enter post content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formPostCategory">
-          <Form.Label>Category:</Form.Label>
-          {categories.length > 0 ? (
-            <Form.Select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+    <div className="book-review-container">
+      <h2>Add Book Review</h2>
+      {error && <p className="error-message">{error}</p>}
+      {successMessage && <p className="success-message">{successMessage}</p>}
+
+      <section className="add-book-review-section">
+        <form onSubmit={handleSubmit} className="book-review-form">
+          <div className="book-form-grid">
+            <div className="form-group">
+              <label htmlFor="bookTitle">Book Title*</label>
+              <input
+                type="text"
+                id="bookTitle"
+                name="bookTitle"
+                value={newPost.bookTitle}
+                onChange={handleInputChange}
+                placeholder="Enter book title"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="author">Author*</label>
+              <input
+                type="text"
+                id="author"
+                name="author"
+                value={newPost.author}
+                onChange={handleInputChange}
+                placeholder="Enter author name"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="isbn">ISBN</label>
+              <input
+                type="text"
+                id="isbn"
+                name="isbn"
+                value={newPost.isbn}
+                onChange={handleInputChange}
+                placeholder="Enter ISBN (optional)"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="genre">Genre</label>
+              <select
+                id="genre"
+                name="genre"
+                value={newPost.genre}
+                onChange={handleInputChange}
+              >
+                <option value="">Select a genre</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Science Fiction">Science Fiction</option>
+                <option value="Fantasy">Fantasy</option>
+                <option value="Romance">Romance</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Horror">Horror</option>
+                <option value="Biography">Biography</option>
+                <option value="History">History</option>
+                <option value="Self-Help">Self-Help</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="rating">Rating</label>
+              <select
+                id="rating"
+                name="rating"
+                value={newPost.rating}
+                onChange={handleInputChange}
+              >
+                <option value="5">★★★★★ (5/5)</option>
+                <option value="4">★★★★☆ (4/5)</option>
+                <option value="3">★★★☆☆ (3/5)</option>
+                <option value="2">★★☆☆☆ (2/5)</option>
+                <option value="1">★☆☆☆☆ (1/5)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group full-width">
+            <label htmlFor="review">Book Review*</label>
+            <textarea
+              id="review"
+              name="review"
+              value={newPost.review}
+              onChange={handleInputChange}
+              placeholder="Write your review here..."
+              rows="6"
               required
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Form.Select>
-          ) : (
-            <p className="text-danger">No categories available. Please create a category first.</p>
-          )}
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formPostPublish">
-          <Form.Check
-            type="checkbox"
-            label="Publish immediately"
-            checked={publishImmediately}
-            onChange={(e) => setPublishImmediately(e.target.checked)}
-          />
-        </Form.Group>
-        <Button variant="primary" type="submit" className="w-100">
-          Create Post
-        </Button>
-      </Form>
+            ></textarea>
+          </div>
+
+          <button type="submit" className="submit-review-btn">
+            Post Review
+          </button>
+        </form>
+      </section>
     </div>
   );
 }
 
-export default AddPostPage;
+export default AddBookPost;

@@ -5,6 +5,8 @@ const cors = require('cors');
 const authRouter = require('./api/auth/auth.router');
 const postsRouter = require('./api/posts/posts.router');
 const categoriesRouter = require('./api/categories/categories.router');
+const booksRouter = require('./api/books/books.router');
+const reviewsRouter = require('./api/reviews/reviews.router');
 
 // Swagger
 
@@ -31,11 +33,13 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/books', booksRouter);
+app.use('/api/reviews', reviewsRouter);
 
 // Root Welcome Route
 app.get('/', (req, res) => {
   res.json({
-    message: 'Welcome to the Blog API!',
+    message: 'Welcome to the Blog and Book Review API!',
     documentation: `http://localhost:${process.env.PORT || 8000}/api-docs`
   });
 });

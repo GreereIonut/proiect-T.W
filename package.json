@@ -6,13 +6,17 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.8.2",
+    "@prisma/client": "^6.9.0",
     "all": "^0.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -25,7 +29,10 @@
     "swagger-ui-express": "^5.x.x"
   },
   "devDependencies": {
+    "@types/node": "^24.0.3",
     "nodemon": "^3.x.x",
-    "prisma": "^6.8.2"
+    "prisma": "^6.9.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
